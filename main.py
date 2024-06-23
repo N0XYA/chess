@@ -2,15 +2,8 @@ import pygame
 from pygame.locals import *
 import time
 import figures
+from settings import *
 
-
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-GRAY = (150, 150, 150)
-
-WIDTH, HEIGHT = 60, 60
-
-BOARD = [[(1 * WIDTH, 1 * HEIGHT)] * 8] * 8
 
 
 def draw_board():
@@ -19,17 +12,17 @@ def draw_board():
         for j in range(len(BOARD[i])):
             square = Rect(x, y, *BOARD[i][j])
             if i % 2 == 0:
-                color = BLACK
+                color = DARK
                 if j % 2 == 0:
-                    color = WHITE
+                    color = LIGHT
             else:
-                color = WHITE
+                color = LIGHT
                 if j % 2 == 0:
-                    color = BLACK
+                    color = DARK
             pygame.draw.rect(screen, color, square)
-            x += WIDTH
+            x += SQUARE_WIDTH
         x = 0
-        y += HEIGHT
+        y += SQUARE_HEIGHT
 
 
 pygame.init()
@@ -37,16 +30,14 @@ screen = pygame.display.set_mode((480, 480))
 running = True
 
 
-pawn = figures.pawn(0, 0, "black")
+pawn = figures.Pawn(0, 0, team="black")
 img = pygame.image.load(pawn.img)
-img = pygame.transform.scale(img, (WIDTH, HEIGHT))
+img = pygame.transform.scale(img, (SQUARE_WIDTH, SQUARE_HEIGHT))
 img.convert()
 rect = img.get_rect()
-# rect.x += WIDTH
-rect.y += HEIGHT
+rect.x += 2 * SQUARE_WIDTH
+rect.y += 1 * SQUARE_HEIGHT
 def render_figures():
-    b = []
-    w = []
 
 while running:
     for event in pygame.event.get():
