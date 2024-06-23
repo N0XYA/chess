@@ -1,12 +1,14 @@
 import pygame
 from pygame.locals import *
 import time
+import figures
+
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (150, 150, 150)
 
-WIDTH, HEIGHT = 40, 40
+WIDTH, HEIGHT = 60, 60
 
 BOARD = [[(1 * WIDTH, 1 * HEIGHT)] * 8] * 8
 
@@ -31,8 +33,20 @@ def draw_board():
 
 
 pygame.init()
-screen = pygame.display.set_mode((720, 480))
+screen = pygame.display.set_mode((480, 480))
 running = True
+
+
+pawn = figures.pawn(0, 0, "black")
+img = pygame.image.load(pawn.img)
+img = pygame.transform.scale(img, (WIDTH, HEIGHT))
+img.convert()
+rect = img.get_rect()
+# rect.x += WIDTH
+rect.y += HEIGHT
+def render_figures():
+    b = []
+    w = []
 
 while running:
     for event in pygame.event.get():
@@ -40,7 +54,6 @@ while running:
             running = False
         screen.fill(GRAY)
         draw_board()
-        pygame.display.flip()
+        screen.blit(img, rect)
+        pygame.display.update()
 pygame.quit()
-
-draw_board()
