@@ -41,6 +41,6 @@ while running:
         screen.fill(GRAY)
         draw_board()
         pygame.display.flip()
-pygame.quit
+pygame.quit()
 
 draw_board()
