@@ -25,6 +25,7 @@ class Pawn(Figure):
         self.moves_counter += 1
 
 
+
 class Bishop(Figure):
     def __init__(self, x, y, team) -> None:
         super().__init__(x, y, team)
