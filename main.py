@@ -6,7 +6,6 @@ import player
 from settings import *
 
 
-
 def draw_board():
     x, y = 0, 0
     for i in range(len(BOARD)):
@@ -72,20 +71,45 @@ def init_figures():
         
 
 pygame.init()
-screen = pygame.display.set_mode((480, 480))
+pygame.display.set_caption("Chess")
+icon = pygame.image.load(GAME_ICON)
+pygame.display.set_icon(icon)
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 64)
 running = True
-
+moving = False
 bplayer = player.Player()
 wplayer = player.Player()
 
 init_figures()
 
+selected = None
+selected_moves = None
+
 while running:
+    coordinates = {
+        "black": bplayer.get_coords(),
+        "white": wplayer.get_coords()
+    }
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == MOUSEBUTTONDOWN:
+            if event.button == 3:
+                selected = None
+                selected_moves = None
+            elif event.button == 1:
+                for figure in bplayer.figures:
+                    if figure.rect.collidepoint(event.pos):
+                        selected = f"Selected {figure.name}"                
+                        selected_moves = figure.draw_moves(coordinates)
+                for figure in wplayer.figures:
+                    if figure.rect.collidepoint(event.pos):
+                        selected_moves = figure.draw_moves(coordinates)
         screen.fill(GRAY)
         draw_board()
+        if selected_moves is not None:
+            for move in selected_moves:
+                pygame.draw.rect(screen, *move)
         wplayer.render_figures(screen)
         bplayer.render_figures(screen)
         pygame.display.update()
