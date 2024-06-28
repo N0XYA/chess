@@ -38,7 +38,6 @@ class Figure():
         self.rect.y += self.y * SQUARE_HEIGHT
         return image, self.rect
     
-
     def vertical(self, figures_coordinates):
         vertival_moves = []
         top_n = [self.x, -9]
@@ -66,7 +65,6 @@ class Figure():
             move[1] -= self.y
         return vertival_moves
         
-
     def horizontal(self, figures_coordinates):
         horizontal_moves = []
         left_n = [-9, self.y]
@@ -94,7 +92,50 @@ class Figure():
             move[1] -= self.y
         return horizontal_moves
 
-
+    def diagonal(self, figures_coordinates):
+        bot_right = []
+        top_left = []
+        top_right = []
+        bot_left = []
+        for i in range(1, 7):
+            if self.x + i < 8 and self.y + i < 8:
+                bot_right.append([self.x + i, self.y + i])
+            if self.x - i >= 0 and self.y - i >= 0:
+                top_left.append([self.x - i, self.y - i])
+            if self.x + i < 8 and self.y - i >= 0:
+                top_right.append([self.x + i, self.y - i])
+            if self.x - i >= 0 and self.y + i < 8:
+                bot_left.append([self.x - i, self.y + i])
+        
+        if bot_right:
+            for move in bot_right:
+                if tuple(move) in figures_coordinates[self.team] or tuple(move) in figures_coordinates[self.enemy_team]:
+                    index = bot_right.index(move)
+                    bot_right = bot_right[:index]
+                    bot_right.append(move)
+        if top_left:
+            for move in top_left:
+                if tuple(move) in figures_coordinates[self.team] or tuple(move) in figures_coordinates[self.enemy_team]:
+                    index = top_left.index(move)
+                    top_left = top_left[:index]
+                    top_left.append(move)
+        if top_right:
+            for move in top_right:
+                if tuple(move) in figures_coordinates[self.team] or tuple(move) in figures_coordinates[self.enemy_team]:
+                    index = top_right.index(move)
+                    top_right = top_right[:index]
+                    top_right.append(move)
+        if bot_left:
+            for move in bot_left:
+                if tuple(move) in figures_coordinates[self.team] or tuple(move) in figures_coordinates[self.enemy_team]:
+                    index = bot_left.index(move)
+                    bot_left = bot_left[:index]
+                    bot_left.append(move)
+        all_moves = bot_right + top_left + top_right + bot_left
+        for move in all_moves:
+            move[0] -= self.x
+            move[1] -= self.y
+        return all_moves
 class Pawn(Figure):
     def __init__(self, x, y, team) -> None:
         super().__init__(x, y, team)
@@ -120,16 +161,9 @@ class Bishop(Figure):
         self.img = IMAGE_PATH + f"{self.team}/bishop_2x_ns.png"
 
     def draw_moves(self, figures_coordinates):
-        available_moves = []
-        for i in range(1, 8):
-            for j in range(1, 8):
-                if i == j:
-                    available_moves.append((i, j))
-                    available_moves.append((-i, -j))
-                    available_moves.append((i, -j))
-                    available_moves.append((-i, j))
+        moves = self.diagonal(figures_coordinates)
         move_squares = []
-        for move in available_moves:
+        for move in moves:
             move_squares.append(self.render_move(move, figures_coordinates))    
         return move_squares
 
@@ -172,6 +206,7 @@ class Queen(Figure):
         moves = []
         moves += self.horizontal(figures_coordinates)    
         moves += self.vertical(figures_coordinates)
+        moves += self.diagonal(figures_coordinates)
         move_squares = []
         for move in moves:
             move_squares.append(self.render_move(move, figures_coordinates))
