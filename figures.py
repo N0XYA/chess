@@ -188,10 +188,21 @@ class Knight(Figure):
         self.name = "Knight"
         self.img = IMAGE_PATH + f"{self.team}/knight_2x_ns.png"
 
+    def knight_moves(self):
+        available_moves = [[1, 2], [-1, 2], [-1, -2], [1, -2]]
+        if self.y > 5:
+            available_moves.remove([1, 2])
+            available_moves.remove([-1, 2])
+        if self.y < 2:
+            available_moves.remove([-1, -2])
+            available_moves.remove([1, -2])
+        return available_moves
+            
+    
     def draw_moves(self, figures_coordinates):
+        moves = self.knight_moves()
         move_squares = []
-        available_moves = [(1, 2), (-1, 2), (-1, -2), (1, -2)]
-        for move in available_moves:
+        for move in moves:
             move_squares.append(self.render_move(move, figures_coordinates))
         return move_squares
 
