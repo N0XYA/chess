@@ -67,7 +67,6 @@ class Figure():
         return vertival_moves
         
 
-
     def horizontal(self, figures_coordinates):
         horizontal_moves = []
         left_n = [-9, self.y]
@@ -95,6 +94,7 @@ class Figure():
             move[1] -= self.y
         return horizontal_moves
 
+
 class Pawn(Figure):
     def __init__(self, x, y, team) -> None:
         super().__init__(x, y, team)
@@ -111,6 +111,7 @@ class Pawn(Figure):
         for move in available_moves:
             move_squares.append(self.render_move(move, figures_coordinates))
         return move_squares
+
 
 class Bishop(Figure):
     def __init__(self, x, y, team) -> None:
@@ -132,6 +133,7 @@ class Bishop(Figure):
             move_squares.append(self.render_move(move, figures_coordinates))    
         return move_squares
 
+
 class King(Figure):
     def __init__(self, x, y, team) -> None:
         super().__init__(x, y, team)
@@ -145,6 +147,7 @@ class King(Figure):
             move_squares.append(self.render_move(move, figures_coordinates))
         return move_squares
 
+
 class Knight(Figure):
     def __init__(self, x, y, team) -> None:
         super().__init__(x, y, team)
@@ -157,6 +160,7 @@ class Knight(Figure):
         for move in available_moves:
             move_squares.append(self.render_move(move, figures_coordinates))
         return move_squares
+
 
 class Queen(Figure):
     def __init__(self, x, y, team) -> None:
@@ -172,6 +176,7 @@ class Queen(Figure):
         for move in moves:
             move_squares.append(self.render_move(move, figures_coordinates))
         return move_squares
+
 
 class Rook(Figure):
     def __init__(self, x, y, team) -> None:
