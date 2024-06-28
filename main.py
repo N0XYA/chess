@@ -70,6 +70,12 @@ def init_figures():
                         wplayer.append_figures(pawn)
         
 
+def fps_counter():
+    fps = str(int(clock.get_fps()))
+    fps_t = font.render(fps , 1, pygame.Color("RED"))
+    screen.blit(fps_t,(0,0))
+
+
 pygame.init()
 pygame.display.set_caption("Chess")
 icon = pygame.image.load(GAME_ICON)
@@ -79,11 +85,13 @@ running = True
 moving = False
 bplayer = player.Player()
 wplayer = player.Player()
-
-init_figures()
-
+font = pygame.font.SysFont("Arial" , 18 , bold = True)
 selected = None
 selected_moves = None
+running = True
+clock = pygame.time.Clock()
+
+init_figures()
 
 while running:
     coordinates = {
@@ -105,6 +113,7 @@ while running:
                 for figure in wplayer.figures:
                     if figure.rect.collidepoint(event.pos):
                         selected_moves = figure.draw_moves(coordinates)
+        
         screen.fill(GRAY)
         draw_board()
         if selected_moves is not None:
@@ -112,5 +121,8 @@ while running:
                 pygame.draw.rect(screen, *move)
         wplayer.render_figures(screen)
         bplayer.render_figures(screen)
+        fps_counter()
         pygame.display.update()
+        clock.tick(60)
 pygame.quit()
+

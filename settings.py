@@ -9,8 +9,8 @@ BLUE = (153, 204, 255)
 
 SCREEN_WIDTH, SCREEN_HEIGHT = 480, 480
 GAME_ICON = "resources/images/icon.png"
-IMAGE_PATH = "resources/images/figures/"
-IMAGE_OFFSET = 16
+IMAGE_PATH = "resources/images/figures/scaled/"
+IMAGE_OFFSET = 0
 
 SQUARE_WIDTH, SQUARE_HEIGHT = 60, 60
 

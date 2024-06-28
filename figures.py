@@ -11,6 +11,7 @@ class Figure():
         self.name = None
         self.img = None
         self.rect = None
+        self.enemy_team = "black" if self.team == "white" else "white"
 
     def draw_moves(self):
         pass
@@ -22,25 +23,77 @@ class Figure():
         square_x = self.x + move[0]
         square_y = self.y + move[1]
         color = GREEN
-        enemy_team = "black" if self.team == "white" else "white"
         if (square_x, square_y) in figures_coordinates[self.team]:
             color = BLUE
-        elif (square_x, square_y) in figures_coordinates[enemy_team]:
+        elif (square_x, square_y) in figures_coordinates[self.enemy_team]:
             color = RED
         square = Rect(square_x * SQUARE_HEIGHT, square_y * SQUARE_HEIGHT, SQUARE_HEIGHT, SQUARE_HEIGHT)
         return color, square
 
     def render(self):
-        i_width = SQUARE_WIDTH - IMAGE_OFFSET
-        i_height = SQUARE_HEIGHT - IMAGE_OFFSET
         image = pygame.image.load(self.img).convert_alpha()
-        image = pygame.transform.scale(image, (i_width, i_height))
         self.rect = image.get_rect()
         self.rect.center = SQUARE_WIDTH // 2, SQUARE_HEIGHT // 2
         self.rect.x += self.x * SQUARE_WIDTH
         self.rect.y += self.y * SQUARE_HEIGHT
         return image, self.rect
+    
 
+    def vertical(self, figures_coordinates):
+        vertival_moves = []
+        top_n = [self.x, -9]
+        bot_n = [self.x, 9]
+        for i in range(1, 8):
+            if self.y - i >= 0:
+                vertival_moves.append([0 + self.x, self.y - i])
+            if self.y + i < 8:
+                vertival_moves.insert(0, [0 + self.x, self.y + i])         
+        for move in vertival_moves:
+            if tuple(move) in figures_coordinates[self.team] or tuple(move) in figures_coordinates[self.enemy_team]:
+                if move[1] < self.y and move[1] > top_n[1]:
+                    top_n[1] = move[1]
+                if move[1] > self.y and move[1] < bot_n[1]:
+                    bot_n[1] = move[1]
+        if top_n != [self.x, -9]:
+            t_i = vertival_moves.index(top_n)
+            vertival_moves = vertival_moves[:t_i]
+            vertival_moves.append(top_n)
+        if bot_n != [self.x, 9]:
+            b_i = vertival_moves.index(bot_n)
+            vertival_moves = vertival_moves[b_i:]
+        for move in vertival_moves:
+            move[0] -= self.x
+            move[1] -= self.y
+        return vertival_moves
+        
+
+
+    def horizontal(self, figures_coordinates):
+        horizontal_moves = []
+        left_n = [-9, self.y]
+        right_n = [9, self.y]
+        for i in range(1, 8):
+            if i + self.x < 8:
+                horizontal_moves.append([i + self.x, self.y])
+            if -i + self.x >= 0:
+                horizontal_moves.insert(0, [-i + self.x, self.y])
+        for move in horizontal_moves:
+            if tuple(move) in figures_coordinates[self.team] or tuple(move) in figures_coordinates[self.enemy_team]:
+                if move[0] <= self.x and move[0] >= left_n[0]:
+                    left_n[0] = move[0]
+                elif move[0] >= self.x and move[0] <= right_n[0]:
+                    right_n[0] = move[0]
+        if left_n != [-9, self.y]:
+            l_i = horizontal_moves.index(left_n)
+            horizontal_moves = horizontal_moves[l_i:]
+        if right_n != [9, self.y]:
+            r_i = horizontal_moves.index(right_n)
+            horizontal_moves = horizontal_moves[:r_i]
+            horizontal_moves.append(right_n)
+        for move in horizontal_moves:
+            move[0] -= self.x
+            move[1] -= self.y
+        return horizontal_moves
 
 class Pawn(Figure):
     def __init__(self, x, y, team) -> None:
@@ -112,20 +165,11 @@ class Queen(Figure):
         self.img = IMAGE_PATH + f"{self.team}/queen_2x_ns.png"
 
     def draw_moves(self, figures_coordinates):
-        available_moves = []
-        for i in range(1, 8):
-            for j in range(1, 8):
-                if i == j:
-                    available_moves.append((i, j))
-                    available_moves.append((-i, -j))
-                    available_moves.append((i, -j))
-                    available_moves.append((-i, j))
-                    available_moves.append((0, j))
-                    available_moves.append((0, -j))
-            available_moves.append((i, 0))
-            available_moves.append((-i, 0))      
+        moves = []
+        moves += self.horizontal(figures_coordinates)    
+        moves += self.vertical(figures_coordinates)
         move_squares = []
-        for move in available_moves:
+        for move in moves:
             move_squares.append(self.render_move(move, figures_coordinates))
         return move_squares
 
@@ -134,3 +178,12 @@ class Rook(Figure):
         super().__init__(x, y, team)
         self.name = "Rook"
         self.img = IMAGE_PATH + f"{self.team}/rook_2x_ns.png"
+
+    def draw_moves(self, figures_coordinates):
+        moves = []
+        moves += self.horizontal(figures_coordinates)    
+        moves += self.vertical(figures_coordinates)
+        move_squares = []
+        for move in moves:
+            move_squares.append(self.render_move(move, figures_coordinates))
+        return move_squares
