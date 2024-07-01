@@ -136,6 +136,8 @@ class Figure():
             move[0] -= self.x
             move[1] -= self.y
         return all_moves
+
+
 class Pawn(Figure):
     def __init__(self, x, y, team) -> None:
         super().__init__(x, y, team)
@@ -192,7 +194,6 @@ class King(Figure):
                 available_moves.remove([1, 1])
         return available_moves 
 
-
     def draw_moves(self, figures_coordinates):
         moves = self.king_moves()
         move_squares = []
@@ -208,16 +209,14 @@ class Knight(Figure):
         self.img = IMAGE_PATH + f"{self.team}/knight_2x_ns.png"
 
     def knight_moves(self):
-        available_moves = [[1, 2], [-1, 2], [-1, -2], [1, -2]]
-        if self.y > 5:
-            available_moves.remove([1, 2])
-            available_moves.remove([-1, 2])
-        if self.y < 2:
-            available_moves.remove([-1, -2])
-            available_moves.remove([1, -2])
+        available_moves = [[1, 2], [-1, 2], [-1, -2], [1, -2],
+                           [2, 1], [-2, 1], [-2, -1], [2, -1]]
+        
+        for move in available_moves:
+            if [move[0] + self.x, move[1] + self.y] not in BOARD_COORDINATES:
+                available_moves.remove(move)
         return available_moves
             
-    
     def draw_moves(self, figures_coordinates):
         moves = self.knight_moves()
         move_squares = []
