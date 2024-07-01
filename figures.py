@@ -173,11 +173,30 @@ class King(Figure):
         super().__init__(x, y, team)
         self.name = "King"
         self.img = IMAGE_PATH + f"{self.team}/king_2x_ns.png"
+    
+    def king_moves(self):
+        available_moves = [[0, 1], [0, -1], [-1, 0], [1, 0], [1, 1], [-1, -1], [-1, 1], [1, -1]]
+        if self.x > 6:
+            available_moves.remove([1, 0])
+            available_moves.remove([1, -1])
+            available_moves.remove([1, 1])
+        if self.x < 1:                    
+            available_moves.remove([-1, 0])
+            available_moves.remove([-1, -1])
+            available_moves.remove([-1, 1])
+        if self.y > 6:                    
+            if [-1, 1] in available_moves:
+                available_moves.remove([-1, 1])
+            available_moves.remove([0, 1])
+            if [1, 1] in available_moves:
+                available_moves.remove([1, 1])
+        return available_moves 
+
 
     def draw_moves(self, figures_coordinates):
+        moves = self.king_moves()
         move_squares = []
-        available_moves = [(0, 1), (0, -1), (-1, 0), (1, 0), (1, 1), (-1, -1), (-1, 1), (1, -1)]
-        for move in available_moves:
+        for move in moves:
             move_squares.append(self.render_move(move, figures_coordinates))
         return move_squares
 
