@@ -178,21 +178,12 @@ class King(Figure):
     
     def king_moves(self):
         available_moves = [[0, 1], [0, -1], [-1, 0], [1, 0], [1, 1], [-1, -1], [-1, 1], [1, -1]]
-        if self.x > 6:
-            available_moves.remove([1, 0])
-            available_moves.remove([1, -1])
-            available_moves.remove([1, 1])
-        if self.x < 1:                    
-            available_moves.remove([-1, 0])
-            available_moves.remove([-1, -1])
-            available_moves.remove([-1, 1])
-        if self.y > 6:                    
-            if [-1, 1] in available_moves:
-                available_moves.remove([-1, 1])
-            available_moves.remove([0, 1])
-            if [1, 1] in available_moves:
-                available_moves.remove([1, 1])
-        return available_moves 
+        result = []
+        for move in available_moves:
+            real_move_coords = [move[0] + self.x, move[1] + self.y]
+            if real_move_coords in BOARD_COORDINATES:
+                result.append(move)
+        return result
 
     def draw_moves(self, figures_coordinates):
         moves = self.king_moves()
@@ -209,13 +200,13 @@ class Knight(Figure):
         self.img = IMAGE_PATH + f"{self.team}/knight_2x_ns.png"
 
     def knight_moves(self):
-        available_moves = [[1, 2], [-1, 2], [-1, -2], [1, -2],
-                           [2, 1], [-2, 1], [-2, -1], [2, -1]]
-        
+        available_moves = [[1, 2], [-1, 2], [-1, -2], [1, -2], [2, 1], [-2, 1], [-2, -1], [2, -1]]
+        result = []
         for move in available_moves:
-            if [move[0] + self.x, move[1] + self.y] not in BOARD_COORDINATES:
-                available_moves.remove(move)
-        return available_moves
+            real_move_coords = [move[0] + self.x, move[1] + self.y]
+            if real_move_coords in BOARD_COORDINATES:
+                result.append(move)
+        return result
             
     def draw_moves(self, figures_coordinates):
         moves = self.knight_moves()
