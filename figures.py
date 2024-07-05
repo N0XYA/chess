@@ -13,21 +13,34 @@ class Figure():
         self.rect = None
         self.enemy_team = "black" if self.team == "white" else "white"
 
+    def get_coordinates(self):
+        return (self.x, self.y)
+
     def draw_moves(self):
         pass
 
-    def move(self):
-       pass 
+    def move(self, move_coords, figures_coordinates):
+        next_move = move_coords[0] + self.x, move_coords[1] + self.y
+        if (next_move) in figures_coordinates[self.team]:
+            return None, None
+        elif (next_move) in figures_coordinates[self.enemy_team]:
+            self.x += move_coords[0]
+            self.y += move_coords[1]
+            return self.team, next_move
+        else:
+            self.x += move_coords[0]
+            self.y += move_coords[1]
+            return None, None
     
     def render_move(self, move, figures_coordinates):
         square_x = self.x + move[0]
         square_y = self.y + move[1]
         color = GREEN
-        if (square_x, square_y) in figures_coordinates[self.team]:
-            color = BLUE
-        elif (square_x, square_y) in figures_coordinates[self.enemy_team]:
+        if (square_x, square_y) in figures_coordinates[self.enemy_team]:
             color = RED
-        square = Rect(square_x * SQUARE_HEIGHT, square_y * SQUARE_HEIGHT, SQUARE_HEIGHT, SQUARE_HEIGHT)
+            square = Rect(square_x * SQUARE_HEIGHT, square_y * SQUARE_HEIGHT, SQUARE_HEIGHT, SQUARE_HEIGHT)
+        else:
+            square = Rect(square_x * SQUARE_HEIGHT, square_y * SQUARE_HEIGHT, SQUARE_HEIGHT, SQUARE_HEIGHT)
         return color, square
 
     def render(self):
@@ -106,31 +119,34 @@ class Figure():
                 top_right.append([self.x + i, self.y - i])
             if self.x - i >= 0 and self.y + i < 8:
                 bot_left.append([self.x - i, self.y + i])
-        
         if bot_right:
             for move in bot_right:
                 if tuple(move) in figures_coordinates[self.team] or tuple(move) in figures_coordinates[self.enemy_team]:
                     index = bot_right.index(move)
                     bot_right = bot_right[:index]
                     bot_right.append(move)
+                    break
         if top_left:
             for move in top_left:
                 if tuple(move) in figures_coordinates[self.team] or tuple(move) in figures_coordinates[self.enemy_team]:
                     index = top_left.index(move)
                     top_left = top_left[:index]
                     top_left.append(move)
+                    break
         if top_right:
             for move in top_right:
                 if tuple(move) in figures_coordinates[self.team] or tuple(move) in figures_coordinates[self.enemy_team]:
                     index = top_right.index(move)
                     top_right = top_right[:index]
                     top_right.append(move)
+                    break
         if bot_left:
             for move in bot_left:
                 if tuple(move) in figures_coordinates[self.team] or tuple(move) in figures_coordinates[self.enemy_team]:
                     index = bot_left.index(move)
                     bot_left = bot_left[:index]
                     bot_left.append(move)
+                    break
         all_moves = bot_right + top_left + top_right + bot_left
         for move in all_moves:
             move[0] -= self.x
@@ -147,13 +163,25 @@ class Pawn(Figure):
 
     def draw_moves(self, figures_coordinates):
         move_squares = []
+        available_moves = []
         if self.team == "black":
-            available_moves = [(0, 1), (0, 2)]
-        else:
-            available_moves = [(0, -1), (0, -2)]
+            if self.first_move:
+                available_moves = [(0, 1), (0, 2)]
+                for move in figures_coordinates["white"]:
+                    if [self.x + 1, self.y + 1] == move:
+                        available_moves.append[move]
+                self.first_move = False
+            else:
+                available_moves = [(0, 1)]
+        elif self.team == "white":
+            if self.first_move:
+                available_moves = [(0, -1), (0, -2)]
+                self.first_move = False
+            else:
+                available_moves = [(0, -1)]
         for move in available_moves:
             move_squares.append(self.render_move(move, figures_coordinates))
-        return move_squares
+        return move_squares, available_moves
 
 
 class Bishop(Figure):
@@ -167,7 +195,7 @@ class Bishop(Figure):
         move_squares = []
         for move in moves:
             move_squares.append(self.render_move(move, figures_coordinates))    
-        return move_squares
+        return move_squares, moves
 
 
 class King(Figure):
@@ -190,7 +218,7 @@ class King(Figure):
         move_squares = []
         for move in moves:
             move_squares.append(self.render_move(move, figures_coordinates))
-        return move_squares
+        return move_squares, moves
 
 
 class Knight(Figure):
@@ -213,11 +241,11 @@ class Knight(Figure):
         move_squares = []
         for move in moves:
             move_squares.append(self.render_move(move, figures_coordinates))
-        return move_squares
+        return move_squares, moves
 
 
 class Queen(Figure):
-    def __init__(self, x, y, team) -> None:
+    def __init__(self, x, y , team) -> None:
         super().__init__(x, y, team)
         self.name = "Queen"
         self.img = IMAGE_PATH + f"{self.team}/queen_2x_ns.png"
@@ -230,7 +258,7 @@ class Queen(Figure):
         move_squares = []
         for move in moves:
             move_squares.append(self.render_move(move, figures_coordinates))
-        return move_squares
+        return move_squares, moves
 
 
 class Rook(Figure):
@@ -246,4 +274,4 @@ class Rook(Figure):
         move_squares = []
         for move in moves:
             move_squares.append(self.render_move(move, figures_coordinates))
-        return move_squares
+        return move_squares, moves

@@ -10,6 +10,11 @@ class Player():
     def render_figures(self, screen):
         for figure in self.figures:
             screen.blit(*figure.render())
+    
+    def delete_figures(self, coordinates):
+        for figure in self.figures:
+            if figure.get_coordinates() == tuple(coordinates):
+                self.figures.remove(figure)
 
     def get_coords(self):
         coordinates = []
